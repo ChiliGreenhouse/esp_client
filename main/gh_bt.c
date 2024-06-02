@@ -225,8 +225,10 @@ esp_err_t gh_bt_start_srv(void)
 void vBT_decoder(void * pvParameters) {
     BaseType_t res;
     gh_bt_data xBT_queue_data;
+    TaskHandle_t xTaskHandleSRVConnector = NULL;
     uint8_t ssid[32] = {0};
     uint8_t pwd[64] = {0};
+    uint8_t url[128] = {0};
     for(;;) {
         res = xQueueReceive(xBT_Queue, &xBT_queue_data, portMAX_DELAY);
         //gh_wifi_init_sta(&"12345678", &"12345678");
@@ -248,13 +250,22 @@ void vBT_decoder(void * pvParameters) {
                 memset(pwd, 0, 64);
             }
             if(!memcmp(&"AT+url:", xBT_queue_data.data, 7)) {
-                if (gh_wifi_status()) {
+                /*if (gh_wifi_status()) {
                     gh_url_get_test(&xBT_queue_data.data[7]);
-                }
+                }*/
+                memcpy(url, &xBT_queue_data.data[7],xBT_queue_data.len-7);
+                url[xBT_queue_data.len-7] = 0;
+            }
+            if(gh_wifi_status() && url[0] !=  0 && xTaskHandleSRVConnector == NULL) {
+                xTaskCreate(vSRV_connector,
+                            GH_SRV_CONNECTOR,
+                            2*configMINIMAL_STACK_SIZE,
+                            url,
+                            10,     
+                            &xTaskHandleSRVConnector);
             }
 
         }
-
     }
     vTaskDelete(NULL);
 }

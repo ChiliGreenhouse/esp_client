@@ -17,6 +17,7 @@
 #include "gh_common_freertos.h"
 #include "gh_wifi.h"
 #include "gh_http_client.h"
+#include "gh_srv_connector.h"
 
 #define SPP_TAG "SPP_ACCEPTOR_DEMO"
 #define SPP_SERVER_NAME "SPP_SERVER"

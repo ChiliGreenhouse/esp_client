@@ -9,3 +9,5 @@
 extern EventGroupHandle_t xLED_EventGroup;
 
 extern QueueHandle_t xBT_Queue;
+
+extern QueueHandle_t xPostSensorDataQueue;
