@@ -18,6 +18,8 @@ void vSRV_connector(void * pvURL) {
     xPostSensorDataQueue = xQueueCreate(5, sizeof(gh_post_data_t));
     ESP_LOGI(GH_SRV_CONNECTOR, "xPostSensorDataQueue created: %s", (xPostSensorDataQueue==NULL) ? "N" : "Y");
 
+    init_adc();
+
     sprintf((char *)data_buff, "{\"name\":\"%s\",\"type\":{\"SENSOR\":{}}}", temp_sensor);
     gh_post_data(url, data_buff);
 
@@ -25,7 +27,7 @@ void vSRV_connector(void * pvURL) {
 
     xTaskCreate(vTemp_sense,
                 GH_TEMP_DEVICE,
-                configMINIMAL_STACK_SIZE,
+                2*configMINIMAL_STACK_SIZE,
                 temp_sensor,
                 10,     
                 &xTaskHandleTempDevice);
@@ -37,7 +39,7 @@ void vSRV_connector(void * pvURL) {
 
     xTaskCreate(vSoil_sense,
                 GH_SOIL_DEVICE,
-                configMINIMAL_STACK_SIZE,
+                2*configMINIMAL_STACK_SIZE,
                 moisture_sensor,
                 10,     
                 &xTaskHandleSoilDevice);
